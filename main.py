@@ -106,16 +106,16 @@ def add_song_to_playlist():
 def main():
 
     get_current_song(SPOTIFY_ACCESS_TOKEN)
-    #create_playlist()
-    # current_track_id = None
-    # while True:
-    #     current_track_info = get_current_song()
-    #
-    #     if current_track_info['id'] != current_track_id:
-    #         add_song_to_playlist()
-    #         current_track_id = current_track_info['id']
-    #
-    #     time.sleep(2)
+    create_playlist()
+    current_track_id = None
+    while True:
+        current_track_info = get_current_song()
+
+        if current_track_info['id'] != current_track_id:
+            add_song_to_playlist()
+            current_track_id = current_track_info['id']
+
+        time.sleep(2)
 
 
 if __name__ == '__main__':
