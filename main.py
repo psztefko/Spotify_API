@@ -11,7 +11,7 @@ def create_playlist():
     request_body = json.dumps({
         "name": "agent of chaos",
         "description": "under construction",
-        "public": True
+        "public": False
     })
 
     query = "https://api.spotify.com/v1/users/{}/playlists".format(
@@ -24,30 +24,11 @@ def create_playlist():
             "Authorization": f"Bearer {ACCESS_TOKEN}"
         }
     )
-    response_json = response.json()
+    json_resp = response.json()
 
-    # playlist id
-    return response_json["id"]
+    print(json_resp)
 
-
-# def get_current_song():
-#     response = requests.get(
-#         SPOTIFY_GET_CURRENT_TRACK_URL,
-#         headers={
-#             "Authorization": f"Bearer {SPOTIFY_ACCESS_TOKEN}"
-#         }
-#     )
-#     json_resp = response.json()
-#
-#     track_id = json_resp['item']['id']
-#     uri = json_resp['item']['uri']
-#
-#     current_track_info = {
-#         "id": track_id,
-#         "uri": uri,
-#     }
-#
-#     return current_track_info
+    #return response_json["id"]
 
 
 def add_song_to_playlist():
@@ -86,18 +67,19 @@ def get_current_track():
 
 
 def main():
-    current_track_id = None
-    while True:
-        current_track_info = get_current_track()
-
-        if current_track_info['id'] != current_track_id:
-            pprint(
-                current_track_info,
-                indent=4,
-            )
-            current_track_id = current_track_info['id']
-
-        time.sleep(1)
+    create_playlist()
+    # current_track_id = None
+    # while True:
+    #     current_track_info = get_current_track()
+    #
+    #     if current_track_info['id'] != current_track_id:
+    #         pprint(
+    #             current_track_info,
+    #             indent=4,
+    #         )
+    #         current_track_id = current_track_info['id']
+    #
+    #     time.sleep(1)
 
 
 if __name__ == '__main__':
