@@ -1,5 +1,6 @@
-from env import SPOTIFY_USER_ID, SPOTIFY_ACCESS_TOKEN, SPOTIFY_GET_CURRENT_TRACK_URL
-from src.CreatePlaylist import CreatePlaylist
+#from src.CreatePlaylist import CreatePlaylist
+from env import SPOTIFY_USER_ID, ACCESS_TOKEN, SPOTIFY_GET_CURRENT_TRACK_URL
+from pprint import pprint
 import time
 import json
 import requests
@@ -8,8 +9,8 @@ def create_playlist():
     """Create A New Playlist"""
 
     request_body = json.dumps({
-        "name": "Youtube Liked Vids",
-        "description": "All Liked Youtube Videos",
+        "name": "agent of chaos",
+        "description": "under construction",
         "public": True
     })
 
@@ -20,7 +21,7 @@ def create_playlist():
         data=request_body,
         headers={
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {SPOTIFY_ACCESS_TOKEN}"
+            "Authorization": f"Bearer {ACCESS_TOKEN}"
         }
     )
     response_json = response.json()
@@ -48,11 +49,19 @@ def create_playlist():
 #
 #     return current_track_info
 
-def get_current_song(access_token):
+
+def add_song_to_playlist():
+    """Add current playing song into a new Spotify playlist
+    playlist_id: 3cEYpjA9oz9GiPac4AsH4n
+    song_uri: """
+
+
+
+def get_current_track():
     response = requests.get(
         SPOTIFY_GET_CURRENT_TRACK_URL,
         headers={
-            "Authorization": f"Bearer {access_token}"
+            "Authorization": f"Bearer {ACCESS_TOKEN}"
         }
     )
     json_resp = response.json()
@@ -60,62 +69,35 @@ def get_current_song(access_token):
     track_id = json_resp['item']['id']
     track_name = json_resp['item']['name']
     artists = [artist for artist in json_resp['item']['artists']]
-
     link = json_resp['item']['external_urls']['spotify']
-
     artist_names = ', '.join([artist['name'] for artist in artists])
+
+    uri = json_resp['item']['uri']
 
     current_track_info = {
     	"id": track_id,
     	"track_name": track_name,
     	"artists": artist_names,
-    	"link": link
+    	"link": link,
+        "uri": uri
     }
 
     return current_track_info
 
-def add_song_to_playlist():
-    """Add all liked songs into a new Spotify playlist"""
-
-    # get uri of current song
-    current_song = get_current_song()
-    uri = current_song['uri']
-
-    # create a new playlist
-    playlist_id = create_playlist()
-
-    # add song into playlist
-    request_data = json.dumps(uri)
-
-    query = "https://api.spotify.com/v1/playlists/{}/tracks".format(
-        playlist_id)
-
-    response = requests.post(
-        query,
-        data=request_data,
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": "Bearer {}".format(SPOTIFY_ACCESS_TOKEN)
-        }
-    )
-
-    response_json = response.json()
-    return response_json
-
 
 def main():
-
-    get_current_song(SPOTIFY_ACCESS_TOKEN)
-    create_playlist()
     current_track_id = None
     while True:
-        current_track_info = get_current_song()
+        current_track_info = get_current_track()
 
         if current_track_info['id'] != current_track_id:
-            add_song_to_playlist()
+            pprint(
+                current_track_info,
+                indent=4,
+            )
             current_track_id = current_track_info['id']
 
-        time.sleep(2)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
