@@ -58,11 +58,6 @@ def get_playlist_id():
 
     create_playlist()
 
-    for playlist in range(len(playlists)):
-        if playlists[playlist]['name'] == 'agent of chaos':
-            pass
-
-
 
 def add_song_to_playlist():
     """Add current playing song into a playlist
@@ -104,7 +99,7 @@ def get_current_track():
 
 def main():
 
-    create_playlist()
+    get_playlist_id()
 
     # current_track_id = None
     # while True:
