@@ -1,5 +1,5 @@
-#from src.CreatePlaylist import CreatePlaylist
-from env import USER_ID, ACCESS_TOKEN, GET_CURRENT_TRACK_URL, GET_LIST_OF_USER_PLAYLISTS
+# from src.CreatePlaylist import CreatePlaylist
+from env import USER_ID, ACCESS_TOKEN
 from pprint import pprint
 import time
 import json
@@ -8,6 +8,7 @@ import logging
 
 logger = logging.getLogger('main')
 logging.basicConfig(level=logging.DEBUG)
+
 
 def create_playlist():
     """Creates new playlist"""
@@ -39,38 +40,34 @@ def get_list_of_playlists():
     """Returns list of current user playlists"""
 
     response = requests.get(
-        GET_LIST_OF_USER_PLAYLISTS,
+        "https://api.spotify.com/v1/me/playlists",
         headers={
             "Authorization": f"Bearer {ACCESS_TOKEN}"
         }
     )
     json_resp = response.json()
+    logger.info("Updated list of current user playlist")
     return json_resp['items']
 
+
 def get_playlist_id():
-    """Checks user playlists and if dump playlist doesn't exist, creates it"""
+    """Returns dump playlist id (if doesn't exist, creates one)"""
 
     playlists = get_list_of_playlists()
 
     for playlist in range(len(playlists)):
         if playlists[playlist]['name'] == 'agent of chaos':
+            logger.info('Playlist already exists')
             return playlists[playlist]['id']
 
     create_playlist()
-
-
-def add_song_to_playlist():
-    """Add current playing song into a playlist
-    playlist_id: 3cEYpjA9oz9GiPac4AsH4n
-    song_uri: """
-
 
 
 def get_current_track():
     """Gets current playing track info"""
 
     response = requests.get(
-        GET_CURRENT_TRACK_URL,
+        "https://api.spotify.com/v1/me/player/currently-playing",
         headers={
             "Authorization": f"Bearer {ACCESS_TOKEN}"
         }
@@ -86,10 +83,10 @@ def get_current_track():
     uri = json_resp['item']['uri']
 
     current_track_info = {
-    	"id": track_id,
-    	"track_name": track_name,
-    	"artists": artist_names,
-    	"link": link,
+        "id": track_id,
+        "track_name": track_name,
+        "artists": artist_names,
+        "link": link,
         "uri": uri
     }
 
@@ -97,22 +94,42 @@ def get_current_track():
     return current_track_info
 
 
+def add_song_to_playlist(track_uri, playlist_id):
+    """Add currently playing song into a dump playlist"""
+
+    request_data = json.dumps([track_uri])
+
+    query = "https://api.spotify.com/v1/playlists/{}/tracks".format(
+        playlist_id)
+
+    response = requests.post(
+        query,
+        data=request_data,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {}".format(ACCESS_TOKEN)
+        }
+    )
+
+    json_resp = response.json()
+    return json_resp
+
+
 def main():
 
-    get_playlist_id()
+    current_track_id = None
+    while True:
+        current_track_info = get_current_track()
 
-    # current_track_id = None
-    # while True:
-    #     current_track_info = get_current_track()
-    #
-    #     if current_track_info['id'] != current_track_id:
-    #         pprint(
-    #             current_track_info,
-    #             indent=4,
-    #         )
-    #         current_track_id = current_track_info['id']
-    #
-    #     time.sleep(1)
+        if current_track_info['id'] != current_track_id:
+            pprint(
+                current_track_info,
+                indent=4,
+            )
+            add_song_to_playlist(current_track_info['uri'], get_playlist_id())
+            current_track_id = current_track_info['id']
+
+        time.sleep(30)
 
 
 if __name__ == '__main__':
