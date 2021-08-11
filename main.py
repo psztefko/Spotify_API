@@ -1,6 +1,7 @@
+from env import CLIENT_ID, CLIENT_SECRET
 from src.Spotify import CreatePlaylist
 import time
-
+from src.Authorization import Authorization
 
 def main():
 
