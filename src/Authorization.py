@@ -12,17 +12,17 @@ class Authorization():
     client_secret = None
     token_url = "https://accounts.spotify.com/api/token"
 
-    def __init__(self, client_id, client_secret, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.client_id = client_id
-        self.client_secret = client_secret
+        self.client_id = CLIENT_ID
+        self.client_secret = CLIENT_SECRET
 
     def get_client_credentials(self):
         """Returns base64 encoded string"""
 
         if self.client_id == None or self.client_secret == None:
             raise Exception("You must set client_id and client_secret")
-        client_creds_b64 = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode())
+        client_creds_b64 = base64.b64encode(f"{self.client_id}:{self.client_secret}".encode())
         return client_creds_b64.decode()
 
     def get_token_headers(self):
@@ -47,6 +47,7 @@ class Authorization():
         self.access_token = data['access_token']
         expires_in = data['expires_in']
         expires = now + datetime.timedelta(seconds=expires_in)
+        self.access_token_expires = expires
         self.access_token_did_expire = self.access_token_expires < now
         return True
 
