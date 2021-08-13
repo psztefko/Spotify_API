@@ -15,7 +15,7 @@ def main():
             spotify.add_song_to_playlist(current_track_info['uri'], spotify.get_playlist_id())
             current_track_id = current_track_info['id']
 
-        time.sleep(2)
+        time.sleep(5)
 
 
 if __name__ == '__main__':
