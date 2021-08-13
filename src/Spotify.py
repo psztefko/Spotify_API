@@ -1,4 +1,5 @@
 from env import USER_ID, ACCESS_TOKEN
+from src.Authorization import Authorization
 import json
 import requests
 import logging
@@ -6,11 +7,14 @@ import logging
 
 class CreatePlaylist:
 
+    token = None
     logger = logging.getLogger('main')
     logging.basicConfig(level=logging.DEBUG)
 
     def __init__(self):
-        pass
+        auth = Authorization()
+        auth.perform_auth()
+        self.token = auth.access_token
 
     def create_playlist(self):
         """Creates new playlist"""
@@ -28,7 +32,7 @@ class CreatePlaylist:
             data=request_body,
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {ACCESS_TOKEN}"
+                "Authorization": f"Bearer {self.token}"
             }
         )
 
@@ -44,7 +48,7 @@ class CreatePlaylist:
         response = requests.get(
             "https://api.spotify.com/v1/me/playlists",
             headers={
-                "Authorization": f"Bearer {ACCESS_TOKEN}"
+                "Authorization": f"Bearer {self.token}"
             }
         )
         json_resp = response.json()
@@ -71,7 +75,7 @@ class CreatePlaylist:
         response = requests.get(
             "https://api.spotify.com/v1/me/player/currently-playing",
             headers={
-                "Authorization": f"Bearer {ACCESS_TOKEN}"
+                "Authorization": f"Bearer {self.token}"
             }
         )
         json_resp = response.json()
@@ -109,7 +113,7 @@ class CreatePlaylist:
             data=request_data,
             headers={
                 "Content-Type": "application/json",
-                "Authorization": "Bearer {}".format(ACCESS_TOKEN)
+                "Authorization": "Bearer {}".format(self.token)
             }
         )
 
